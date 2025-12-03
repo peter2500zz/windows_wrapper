@@ -1,20 +1,9 @@
-use widestring::U16CString;
-use windows::{
-    Win32::UI::WindowsAndMessaging::{
-        MB_OK, 
-        MESSAGEBOX_STYLE, 
-        MessageBoxW, 
-        MESSAGEBOX_RESULT
-    }, core::{
-        PCWSTR,
-        w
-    }
-};
+
 
 #[macro_export]
 macro_rules! formatw {
     ($($arg:tt)*) => {
-        U16CString::from_str_truncate(format!($($arg)*))
+        widestring::U16CString::from_str_truncate(format!($($arg)*))
     }
 }
 
@@ -26,11 +15,11 @@ macro_rules! mb {
         raw_style: $type:expr
     } => {
         unsafe {
-            MessageBoxW(
+            windows::Win32::UI::WindowsAndMessaging::MessageBoxW(
                 None, 
-                PCWSTR(formatw!($($arg)*).as_ptr() as _), 
-                PCWSTR(formatw!($($title)*).as_ptr() as _), 
-                MESSAGEBOX_STYLE($type)
+                windows::core::PCWSTR($crate::formatw!($($arg)*).as_ptr() as _), 
+                windows::core::PCWSTR($crate::formatw!($($title)*).as_ptr() as _), 
+                windows::Win32::UI::WindowsAndMessaging::MESSAGEBOX_STYLE($type)
             ).0
         }
     };
@@ -40,20 +29,20 @@ macro_rules! mb {
         style: $type:expr
     } => {
         unsafe {
-            MessageBoxW(
+            windows::Win32::UI::WindowsAndMessaging::MessageBoxW(
                 None, 
-                PCWSTR(formatw!($($arg)*).as_ptr() as _), 
-                PCWSTR(formatw!($($title)*).as_ptr() as _), 
+                windows::core::PCWSTR($crate::formatw!($($arg)*).as_ptr() as _), 
+                windows::core::PCWSTR($crate::formatw!($($title)*).as_ptr() as _), 
                 $type
             )
         }
     };
     ($($arg:tt)*) => {
         unsafe {
-            MessageBoxW(
+            windows::Win32::UI::WindowsAndMessaging::MessageBoxW(
                 None, 
-                windows::core::PCWSTR(formatw!($($arg)*).as_ptr() as _), 
-                w!(""), 
+                windows::core::PCWSTR($crate::formatw!($($arg)*).as_ptr() as _), 
+                windows::core::w!(""), 
                 windows::Win32::UI::WindowsAndMessaging::MB_OK
             )
         }
