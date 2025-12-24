@@ -1,49 +1,50 @@
-
+pub use widestring;
+pub use windows;
 
 #[macro_export]
 macro_rules! formatw {
     ($($arg:tt)*) => {
-        widestring::U16CString::from_str_truncate(format!($($arg)*))
+        $crate::widestring::U16CString::from_str_truncate(format!($($arg)*))
     }
 }
 
 #[macro_export]
 macro_rules! mb {
     {
-        title: ($($title:tt)*), 
+        title: ($($title:tt)*),
         content: ($($arg:tt)*),
         raw_style: $type:expr
     } => {
         unsafe {
-            windows::Win32::UI::WindowsAndMessaging::MessageBoxW(
-                None, 
-                windows::core::PCWSTR($crate::formatw!($($arg)*).as_ptr() as _), 
-                windows::core::PCWSTR($crate::formatw!($($title)*).as_ptr() as _), 
-                windows::Win32::UI::WindowsAndMessaging::MESSAGEBOX_STYLE($type)
+            $crate::windows::Win32::UI::WindowsAndMessaging::MessageBoxW(
+                None,
+                $crate::windows::core::PCWSTR($crate::formatw!($($arg)*).as_ptr() as _),
+                $crate::windows::core::PCWSTR($crate::formatw!($($title)*).as_ptr() as _),
+                $crate::windows::Win32::UI::WindowsAndMessaging::MESSAGEBOX_STYLE($type)
             ).0
         }
     };
     {
-        title: ($($title:tt)*), 
+        title: ($($title:tt)*),
         content: ($($arg:tt)*),
         style: $type:expr
     } => {
         unsafe {
-            windows::Win32::UI::WindowsAndMessaging::MessageBoxW(
-                None, 
-                windows::core::PCWSTR($crate::formatw!($($arg)*).as_ptr() as _), 
-                windows::core::PCWSTR($crate::formatw!($($title)*).as_ptr() as _), 
+            $crate::windows::Win32::UI::WindowsAndMessaging::MessageBoxW(
+                None,
+                $crate::windows::core::PCWSTR($crate::formatw!($($arg)*).as_ptr() as _),
+                $crate::windows::core::PCWSTR($crate::formatw!($($title)*).as_ptr() as _),
                 $type
             )
         }
     };
     ($($arg:tt)*) => {
         unsafe {
-            windows::Win32::UI::WindowsAndMessaging::MessageBoxW(
-                None, 
-                windows::core::PCWSTR($crate::formatw!($($arg)*).as_ptr() as _), 
-                windows::core::w!(""), 
-                windows::Win32::UI::WindowsAndMessaging::MB_OK
+            $crate::windows::Win32::UI::WindowsAndMessaging::MessageBoxW(
+                None,
+                $crate::windows::core::PCWSTR($crate::formatw!($($arg)*).as_ptr() as _),
+                $crate::windows::core::w!(""),
+                $crate::windows::Win32::UI::WindowsAndMessaging::MB_OK
             )
         }
     }
